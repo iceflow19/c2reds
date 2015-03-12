@@ -6,7 +6,6 @@ Red/System []
 
 ;Void Pointer
 #define void-ptr! pointer! [byte!]
-#define 
 
 ;Integer Types
 #define int32! integer!
