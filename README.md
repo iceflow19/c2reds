@@ -1,2 +1,2 @@
-# c2red
+# c2reds
 A Red Binding Generator
