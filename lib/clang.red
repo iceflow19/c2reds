@@ -623,6 +623,4 @@ make object! [
 			CXCommentParamPassDirection_InOut 2
 		]
 	]
-
-	
 ]

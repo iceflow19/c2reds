@@ -1,7 +1,7 @@
 Red/System []
 
 #include %common.reds
-#define LIBCLANG "libclang.so"
+#define LIBCLANG "/usr/lib/llvm-3.5/lib/libclang-3.5.so"
 
 _clang: context [
 
