@@ -623,4 +623,314 @@ make object! [
 			CXCommentParamPassDirection_InOut 2
 		]
 	]
+
+	createIndex: routine [
+		;Todo
+	] [
+		_clang/createIndex
+	]
+
+	Cursor_getArgument: routine [
+		;Todo
+	] [
+		_clang/Cursor_getArgument
+	]
+	
+	Cursor_getNumArguments: routine [
+		;Todo
+	] [
+		_clang/Cursor_getNumArguments
+	]
+	
+	disposeDiagnostic: routine [
+		;Todo
+	] [
+		_clang/disposeDiagnostic
+	]
+	
+	disposeIndex: routine [
+		;Todo
+	] [
+		_clang/disposeIndex
+	]
+	
+	disposeString: routine [
+		;Todo
+	] [
+		_clang/disposeString
+	]
+	
+	disposeTranslationUnit: routine [
+		;Todo
+	] [
+		_clang/disposeTranslationUnit
+	]
+	
+	formatDiagnostic: routine [
+		;Todo
+	] [
+		_clang/formatDiagnostic
+	]
+	
+	getArrayElementType: routine [
+		;Todo
+	] [
+		_clang/getArrayElementType
+	]
+	
+	getArraySize: routine [
+		;Todo
+	] [
+		_clang/getArraySize
+	]
+	
+	getCanonicalType: routine [
+		;Todo
+	] [
+		_clang/getCanonicalType
+	]
+	
+	getCString: routine [
+		;Todo
+	] [
+		_clang/getCString
+	]
+	
+	getCursorAvailability: routine [
+		;Todo
+	] [
+		_clang/getCursorAvailability
+	]
+	
+	getCursorKind: routine [
+		;Todo
+	] [
+		_clang/getCursorKind
+	]
+	
+	getCursorLexicalParent: routine [
+		;Todo
+	] [
+		_clang/getCursorLexicalParent
+	]
+	
+	getCursorLinkage: routine [
+		;Todo
+	] [
+		_clang/getCursorLinkage
+	]
+	
+	getCursorSemanticParent: routine [
+		;Todo
+	] [
+		_clang/getCursorSemanticParent
+	]
+	
+	getCursorSpelling: routine [
+		;Todo
+	] [
+		_clang/getCursorSpelling
+	]
+	
+	getCursorType: routine [
+		;Todo
+	] [
+		_clang/getCursorType
+	]
+	
+	getDiagnostic: routine [
+		;Todo
+	] [
+		_clang/getDiagnostic
+	]
+	
+	getEnumConstantDeclValue: routine [
+		;Todo
+	] [
+		_clang/getEnumConstantDeclValue
+	]
+	
+	getFieldDeclBitWidth: routine [
+		;Todo
+	] [
+		_clang/getFieldDeclBitWidth
+	]
+	
+	getFunctionTypeCallingConv: routine [
+		;Todo
+	] [
+		_clang/getFunctionTypeCallingConv
+	]
+	
+	getNumDiagnostics: routine [
+		mUnit	[integer!]
+		return:	[integer!]
+		/local
+			Unit ret
+	] [
+		Unit: as void-ptr! mUnit/value
+		ret: _clang/getNumDiagnostics Unit
+		integer/box ret
+	]
+	
+	getNumElements: routine [
+		mT		[integer!]
+		return: [integer!]
+		/local
+			mT ret
+	] [
+		T: as CXType! mT/value
+		ret: _clang/getNumElements T
+		integer/box ret/lower
+	]
+	
+	getResultType: routine [
+		mT		[integer!]
+		return:	[integer!]
+		/local
+			T ret
+	] [
+		T: as CXType! mT/value
+		ret: _clang/getResultType T
+		integer/box as integer! ret
+	]
+	
+	getTranslationUnitCursor: routine [
+		marg1	[integer!]
+		return: [integer!]
+		/local
+			arg1 ret
+	] [
+		arg1: as void-ptr! marg1/value
+		ret: _clang/getTranslationUnitCursor arg1
+		integer/box as integer! ret
+	]
+	
+	getTypeDeclaration: routine [
+		mCT 	[integer!]
+		return: [integer!]
+		/local
+			CT ret
+	] [
+		CT: as CXType! mCT/value
+		ret: _clang/getTypeDeclaration CT
+		integer/box as integer! ret
+	]
+	
+	getTypeSpelling: routine [
+		mCT 	[integer!]
+		return: [string!]
+		/local
+			CT ret text
+	] [
+		CT: as CXType! mCT/value
+		ret: _clang/getTypeSpelling CT
+		text: as c-string! ret/data
+		SET_RETURN ((string/load text (length? text) + 1  UTF-8))
+		free-any ret
+		free-any text
+	]
+	
+	isFunctionTypeVariadic: routine [
+		mT 		[integer!]
+		return: [logic!  ]
+		/local
+			T ret
+	] [
+		T: as CXType! mT/value
+		ret: _clang/isFunctionTypeVariadic T
+		logic/box as logic! ret
+	]
+	
+	parseTranslationUnit2: routine [
+		mCIdx					[integer!]
+		msource_filename		[string! ]
+		mcommand_line_args		[integer!]
+		mnum_command_line_args	[integer!]
+		munsaved_files			[integer!]
+		mnum_unsaved_files		[integer!]
+		moptions				[integer!]
+		mout_TU					[integer!]
+		return:					[integer!]
+		/local
+			CIdx
+			source_filename
+			command_line_args
+			num_command_line_args
+			unsaved_files
+			num_unsaved_files
+			options out_TU
+	] [
+		CIdx: as void-ptr! mCIdx/value
+		source_filename: as void-ptr! to-UTF8 msource_filename
+		command_line_args: as void-ptr! mcommand_line_args/value
+		num_command_line_args: as int32! mnum_command_line_args/value
+		unsaved_files: as void-ptr! munsaved_files/value
+		num_unsaved_files: as uint32! mnum_unsaved_files/value
+		options: as uint32! moptions/value
+		out_TU: as void-ptr! mout_TU/value
+		ret: _clang/parseTranslationUnit2
+				CIdx
+				source_filename
+				command_line_args
+				num_command_line_args
+				unsaved_files
+				num_unsaved_files
+				options out_TU
+		mout_TU: integer/box out_TU
+		integer/box ret
+	]
+	
+	Type_getAlignOf: routine [
+		mT		[integer!]
+		return:	[integer!]
+		/local
+			T ret
+	] [
+		T: as CXType! mT/value
+		ret: _clang/Type_getAlignOf T
+		integer/box ret/lower
+	]
+	
+	Type_getOffsetOf: routine [
+		mT 		[integer!]
+		mS		[integer!]
+		return:	[integer!]
+		/local
+			T S ret
+	] [
+		T: as CXType! mT/value
+		S: as int-ptr! mS/value
+		ret: _clang/Type_getOffsetOf T S
+		integer/box ret/lower
+	]
+	
+	Type_getSizeOf: routine [
+		mT 		[integer!]
+		return:	[integer!]
+		/local
+			T ret
+	] [
+		T: as CXType! mT/value
+		ret: _clang/Type_getSizeOf T
+		integer/box ret/lower
+	]
+	
+	visitChildren: routine [
+		mparent			[integer!]
+		mvisitor 		[integer!]
+		mclient_data	[integer!]
+		return:			[integer!]
+		/local
+			parent
+			visitor
+			client_data
+			ret
+	] [
+		parent: as CXCuror! mparent/value
+		visitor: as int-ptr! mvisitor/value
+		client_data: as int-ptr! mclient_data/value
+		ret: _clang/visitChildren parent visitor client_data
+		integer/box ret
+	]
 ]

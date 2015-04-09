@@ -685,9 +685,9 @@ _clang: context [
 				string [CXString!]
 			]
 
-			;getBuildSessionTimestamp: "clang_getBuildSessionTimestamp" [
-			;	return: [uint64!]
-			;]
+			getBuildSessionTimestamp: "clang_getBuildSessionTimestamp" [
+				return: [uint64!]
+			]
 
 			VirtualFileOverlay_create: "clang_VirtualFileOverlay_create" [
 				options [uint32!]
