@@ -625,141 +625,257 @@ make object! [
 	]
 
 	createIndex: routine [
-		;Todo
+		mexcludeDiagnosticFromPCH	[integer!]
+		mdisplayDiagnostics			[integer!]
+		return:						[integer!]
 	] [
-		_clang/createIndex
+		excludeDiagnosticFromPCH: as int32! mexcludeDiagnosticFromPCH/value
+		displayDiagnostics: as int32! mdisplayDiagnostics/value
+		ret: _clang/createIndex excludeDiagnosticFromPCH displayDiagnostics
+		integer/box as integer! ret
 	]
 
 	Cursor_getArgument: routine [
-		;Todo
+		mC		[integer!]
+		mi		[integer!]
+		return: [integer!]
+		/local
+			C i ret
 	] [
-		_clang/Cursor_getArgument
+		C: as CXCuror! mC/value
+		i: as uint32! mi/value
+		ret: _clang/Cursor_getArgument C i
+		integer/box as integer! ret
 	]
 	
 	Cursor_getNumArguments: routine [
-		;Todo
+		mC		[integer!]
+		return:	[integer!]
+		/local
+			C ret
 	] [
-		_clang/Cursor_getNumArguments
+		C: as CXCuror! mC/value
+		ret: _clang/Cursor_getNumArguments C
+		integer/box ret
 	]
 	
 	disposeDiagnostic: routine [
-		;Todo
+		mDiagnostic	[integer!]
+		/local
+			Diagnostic
 	] [
-		_clang/disposeDiagnostic
+		Diagnostic: as void-ptr! mDiagnostic/value
+		_clang/disposeDiagnostic Diagnostic
 	]
 	
 	disposeIndex: routine [
-		;Todo
+		mindex	[integer!]
+		/local
+			index
 	] [
-		_clang/disposeIndex
+		index: as void-ptr! mindex/value
+		_clang/disposeIndex index
 	]
 	
 	disposeString: routine [
-		;Todo
+		mstring	[integer!]
+		/local
+			string
 	] [
-		_clang/disposeString
+		string: as CXString! mstring/value
+		_clang/disposeString string
 	]
 	
 	disposeTranslationUnit: routine [
-		;Todo
+		marg1 	[integer!]
+		/local
+			arg1
 	] [
-		_clang/disposeTranslationUnit
+		arg1: as void-ptr! marg1/value
+		_clang/disposeTranslationUnit arg1
 	]
 	
 	formatDiagnostic: routine [
-		;Todo
+		mDiagnostic	[integer!]
+		mOptions	[integer!]
+		return:		[integer!]
+		/local
+			Diagnostic Options ret
 	] [
-		_clang/formatDiagnostic
+		Diagnostic: as void-ptr! mDiagnostic/value
+		Options: as uint32! mOptions/value
+		ret: _clang/formatDiagnostic Diagnostic Options
+		integer/box as integer! ret
 	]
 	
 	getArrayElementType: routine [
-		;Todo
+		mT		[integer!]
+		return:	[integer!]
+		/local
+			T ret
 	] [
-		_clang/getArrayElementType
+		T: as CXType! mT/value
+		ret: _clang/getArrayElementType T
+		integer/box as integer! ret
 	]
 	
 	getArraySize: routine [
-		;Todo
+		mT		[integer!]
+		return:	[integer!]
+		/local
+			T ret
 	] [
-		_clang/getArraySize
+		T: as CXType! mT/value
+		ret: _clang/getArraySize T
+		integer/box ret/lower
 	]
 	
 	getCanonicalType: routine [
-		;Todo
+		mT		[integer!]
+		return:	[integer!]
+		/local
+			T ret
 	] [
-		_clang/getCanonicalType
+		T: as CXType! mT/value
+		ret: _clang/getCanonicalType T
+		integer/box as integer! ret
 	]
 	
 	getCString: routine [
-		;Todo
+		mstring	[integer!]
+		return: [string! ]
+		/local
+			string ret text
 	] [
-		_clang/getCString
+		string: as CXString! mstring/value
+		ret: _clang/getCString string
+		text: as c-string! ret/data
+		SET_RETURN ((string/load text (length? text) + 1  UTF-8))
+		free-any ret
+		free-any text
 	]
 	
 	getCursorAvailability: routine [
-		;Todo
+		mcursor	[integer!]
+		return:	[integer!]
+		/local
+			cursor ret
 	] [
-		_clang/getCursorAvailability
+		cursor: as CXCuror! mcursor/value
+		ret: _clang/getCursorAvailability cursor
+		integer/box ret
 	]
 	
 	getCursorKind: routine [
-		;Todo
+		marg1	[integer!]
+		return:	[integer!]
+		/local
+			arg1 ret
 	] [
-		_clang/getCursorKind
+		arg1: as CXCuror! marg1/value
+		ret: _clang/getCursorKind arg1
+		integer/box ret
 	]
 	
 	getCursorLexicalParent: routine [
-		;Todo
+		mcursor	[integer!]
+		return:	[integer!]
+		/local
+			cursor ret
 	] [
-		_clang/getCursorLexicalParent
+		cursor: as CXCuror! mcursor/value
+		ret: _clang/getCursorLexicalParent cursor
+		integer/box as integer! ret
 	]
 	
 	getCursorLinkage: routine [
-		;Todo
+		mcursor	[integer!]
+		return:	[integer!]
+		/local
+			cursor ret
 	] [
-		_clang/getCursorLinkage
+		cursor: as CXCuror! mcursor/value
+		ret: _clang/getCursorLinkage cursor
+		integer/box ret
 	]
 	
 	getCursorSemanticParent: routine [
-		;Todo
+		mcursor	[integer!]
+		return:	[integer!]
+		/local
+			cursor ret
 	] [
-		_clang/getCursorSemanticParent
+		cursor: as CXCuror! mcursor/value
+		ret: _clang/getCursorSemanticParent cursor
+		integer/box as integer! ret
 	]
 	
 	getCursorSpelling: routine [
-		;Todo
+		marg1	[integer!]
+		return:	[integer!]
+		/local
+			arg1 ret
 	] [
-		_clang/getCursorSpelling
+		arg1: as CXCuror! marg1/value
+		ret: _clang/getCursorSpelling arg1
+		integer/box as integer! ret
 	]
 	
 	getCursorType: routine [
-		;Todo
+		mC		[integer!]
+		return: [integer!]
+		/local
+			C ret
 	] [
-		_clang/getCursorType
+		C: as CXCuror! mC/value
+		ret: _clang/getCursorType C
+		integer/box as integer! ret
 	]
 	
 	getDiagnostic: routine [
-		;Todo
+		mUnit	[integer!]
+		mIndex	[integer!]
+		return:	[integer!]
+		/local
+			Unit Index ret
 	] [
-		_clang/getDiagnostic
+		Unit: as void-ptr! mUnit/value
+		Index: as uint32! mIndex/value
+		ret: _clang/getDiagnostic Unit Index
+		integer/box as integer! ret
 	]
 	
 	getEnumConstantDeclValue: routine [
-		;Todo
+		mC		[integer!]
+		return:	[integer!]
+		/local
+			C ret
 	] [
-		_clang/getEnumConstantDeclValue
+		C: as CXCuror! mC/value
+		ret: _clang/getEnumConstantDeclValue C
+		integer/box ret/lower
 	]
 	
 	getFieldDeclBitWidth: routine [
-		;Todo
+		mC		[integer!]
+		return:	[integer!]
+		/local
+			C ret
 	] [
-		_clang/getFieldDeclBitWidth
+		C: as CXCuror! mC/value
+		ret: _clang/getFieldDeclBitWidth C
+		integer/box ret
 	]
 	
 	getFunctionTypeCallingConv: routine [
-		;Todo
+		mT		[integer!]
+		return:	[integer!]
+		/local
+			T ret
 	] [
-		_clang/getFunctionTypeCallingConv
+		T: as CXType! mT/value
+		ret: _clang/getFunctionTypeCallingConv T
+		integer/box ret
 	]
 	
 	getNumDiagnostics: routine [
