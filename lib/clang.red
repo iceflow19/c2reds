@@ -4,8 +4,7 @@ Red []
 	#include %clang.reds
 ]
 
-make object! [
-
+clang: make object! [
 	enum: [
 		CXErrorCode: [
 			CXError_Success 0
@@ -623,16 +622,22 @@ make object! [
 			CXCommentParamPassDirection_InOut 2
 		]
 	]
-
+	
 	createIndex: routine [
 		mexcludeDiagnosticFromPCH	[integer!]
 		mdisplayDiagnostics			[integer!]
 		return:						[integer!]
+		/local
+			excludeDiagnosticFromPCH
+			displayDiagnostics
+			ret
 	] [
-		excludeDiagnosticFromPCH: as int32! mexcludeDiagnosticFromPCH/value
-		displayDiagnostics: as int32! mdisplayDiagnostics/value
-		ret: _clang/createIndex excludeDiagnosticFromPCH displayDiagnostics
-		integer/box as integer! ret
+		with [_clang] [
+			excludeDiagnosticFromPCH: as int32! mexcludeDiagnosticFromPCH
+			displayDiagnostics: as int32! mdisplayDiagnostics
+			ret: _clang/createIndex excludeDiagnosticFromPCH displayDiagnostics
+			as integer! ret
+		]
 	]
 
 	Cursor_getArgument: routine [
@@ -642,10 +647,12 @@ make object! [
 		/local
 			C i ret
 	] [
-		C: as CXCuror! mC/value
-		i: as uint32! mi/value
-		ret: _clang/Cursor_getArgument C i
-		integer/box as integer! ret
+		with [_clang] [
+			C: as CXCursor! mC
+			i: as uint32! mi
+			ret: _clang/Cursor_getArgument C i
+			as integer! ret
+		]
 	]
 	
 	Cursor_getNumArguments: routine [
@@ -654,9 +661,11 @@ make object! [
 		/local
 			C ret
 	] [
-		C: as CXCuror! mC/value
-		ret: _clang/Cursor_getNumArguments C
-		integer/box ret
+		with [_clang] [
+			C: as CXCursor! mC
+			ret: _clang/Cursor_getNumArguments C
+			integer/box ret
+		]
 	]
 	
 	disposeDiagnostic: routine [
@@ -664,8 +673,10 @@ make object! [
 		/local
 			Diagnostic
 	] [
-		Diagnostic: as void-ptr! mDiagnostic/value
-		_clang/disposeDiagnostic Diagnostic
+		with [_clang] [
+			Diagnostic: as void-ptr! mDiagnostic
+			_clang/disposeDiagnostic Diagnostic
+		]
 	]
 	
 	disposeIndex: routine [
@@ -673,8 +684,10 @@ make object! [
 		/local
 			index
 	] [
-		index: as void-ptr! mindex/value
-		_clang/disposeIndex index
+		with [_clang] [
+			index: as void-ptr! mindex
+			_clang/disposeIndex index
+		]
 	]
 	
 	disposeString: routine [
@@ -682,8 +695,10 @@ make object! [
 		/local
 			string
 	] [
-		string: as CXString! mstring/value
-		_clang/disposeString string
+		with [_clang] [
+			string: as CXString! mstring
+			_clang/disposeString string
+		]
 	]
 	
 	disposeTranslationUnit: routine [
@@ -691,8 +706,10 @@ make object! [
 		/local
 			arg1
 	] [
-		arg1: as void-ptr! marg1/value
-		_clang/disposeTranslationUnit arg1
+		with [_clang] [
+			arg1: as void-ptr! marg1
+			_clang/disposeTranslationUnit arg1
+		]
 	]
 	
 	formatDiagnostic: routine [
@@ -702,10 +719,12 @@ make object! [
 		/local
 			Diagnostic Options ret
 	] [
-		Diagnostic: as void-ptr! mDiagnostic/value
-		Options: as uint32! mOptions/value
-		ret: _clang/formatDiagnostic Diagnostic Options
-		integer/box as integer! ret
+		with [_clang] [
+			Diagnostic: as void-ptr! mDiagnostic
+			Options: as uint32! mOptions
+			ret: _clang/formatDiagnostic Diagnostic Options
+			integer/box as integer! ret
+		]
 	]
 	
 	getArrayElementType: routine [
@@ -714,9 +733,11 @@ make object! [
 		/local
 			T ret
 	] [
-		T: as CXType! mT/value
-		ret: _clang/getArrayElementType T
-		integer/box as integer! ret
+		with [_clang] [
+			T: as CXType! mT
+			ret: _clang/getArrayElementType T
+			integer/box as integer! ret
+		]
 	]
 	
 	getArraySize: routine [
@@ -725,9 +746,11 @@ make object! [
 		/local
 			T ret
 	] [
-		T: as CXType! mT/value
-		ret: _clang/getArraySize T
-		integer/box ret/lower
+		with [_clang] [
+			T: as CXType! mT
+			ret: _clang/getArraySize T
+			integer/box ret/lower
+		]
 	]
 	
 	getCanonicalType: routine [
@@ -736,23 +759,27 @@ make object! [
 		/local
 			T ret
 	] [
-		T: as CXType! mT/value
-		ret: _clang/getCanonicalType T
-		integer/box as integer! ret
+		with [_clang] [
+			T: as CXType! mT
+			ret: _clang/getCanonicalType T
+			integer/box as integer! ret
+		]
 	]
 	
 	getCString: routine [
 		mstring	[integer!]
 		return: [string! ]
 		/local
-			string ret text
+			tempstring ret text
 	] [
-		string: as CXString! mstring/value
-		ret: _clang/getCString string
-		text: as c-string! ret/data
-		SET_RETURN ((string/load text (length? text) + 1  UTF-8))
-		free-any ret
-		free-any text
+		with [_clang] [
+			tempstring: as CXString! mstring
+			ret: _clang/getCString tempstring
+			text: as c-string! ret
+			SET_RETURN ((string/load text (length? text) + 1  UTF-8))
+			free as byte-ptr! ret
+			free as byte-ptr! text
+		]
 	]
 	
 	getCursorAvailability: routine [
@@ -761,9 +788,11 @@ make object! [
 		/local
 			cursor ret
 	] [
-		cursor: as CXCuror! mcursor/value
-		ret: _clang/getCursorAvailability cursor
-		integer/box ret
+		with [_clang] [
+			cursor: as CXCursor! mcursor
+			ret: _clang/getCursorAvailability cursor
+			integer/box ret
+		]
 	]
 	
 	getCursorKind: routine [
@@ -772,9 +801,11 @@ make object! [
 		/local
 			arg1 ret
 	] [
-		arg1: as CXCuror! marg1/value
-		ret: _clang/getCursorKind arg1
-		integer/box ret
+		with [_clang] [
+			arg1: as CXCursor! marg1
+			ret: _clang/getCursorKind arg1
+			integer/box ret
+		]
 	]
 	
 	getCursorLexicalParent: routine [
@@ -783,9 +814,11 @@ make object! [
 		/local
 			cursor ret
 	] [
-		cursor: as CXCuror! mcursor/value
-		ret: _clang/getCursorLexicalParent cursor
-		integer/box as integer! ret
+		with [_clang] [	
+			cursor: as CXCursor! mcursor
+			ret: _clang/getCursorLexicalParent cursor
+			integer/box as integer! ret
+		]
 	]
 	
 	getCursorLinkage: routine [
@@ -794,9 +827,11 @@ make object! [
 		/local
 			cursor ret
 	] [
-		cursor: as CXCuror! mcursor/value
-		ret: _clang/getCursorLinkage cursor
-		integer/box ret
+		with [_clang] [
+			cursor: as CXCursor! mcursor
+			ret: _clang/getCursorLinkage cursor
+			integer/box ret
+		]
 	]
 	
 	getCursorSemanticParent: routine [
@@ -805,9 +840,11 @@ make object! [
 		/local
 			cursor ret
 	] [
-		cursor: as CXCuror! mcursor/value
-		ret: _clang/getCursorSemanticParent cursor
-		integer/box as integer! ret
+		with [_clang] [
+			cursor: as CXCursor! mcursor
+			ret: _clang/getCursorSemanticParent cursor
+			integer/box as integer! ret
+		]
 	]
 	
 	getCursorSpelling: routine [
@@ -816,20 +853,24 @@ make object! [
 		/local
 			arg1 ret
 	] [
-		arg1: as CXCuror! marg1/value
-		ret: _clang/getCursorSpelling arg1
-		integer/box as integer! ret
+		with [_clang] [
+			arg1: as CXCursor! marg1
+			ret: _clang/getCursorSpelling arg1
+			integer/box as integer! ret
+		]
 	]
-	
+
 	getCursorType: routine [
 		mC		[integer!]
 		return: [integer!]
 		/local
 			C ret
 	] [
-		C: as CXCuror! mC/value
-		ret: _clang/getCursorType C
-		integer/box as integer! ret
+		with [_clang] [
+			C: as CXCursor! mC
+			ret: _clang/getCursorType C
+			integer/box as integer! ret
+		]
 	]
 	
 	getDiagnostic: routine [
@@ -839,10 +880,12 @@ make object! [
 		/local
 			Unit Index ret
 	] [
-		Unit: as void-ptr! mUnit/value
-		Index: as uint32! mIndex/value
-		ret: _clang/getDiagnostic Unit Index
-		integer/box as integer! ret
+		with [_clang] [
+			Unit: as void-ptr! mUnit
+			Index: as uint32! mIndex
+			ret: _clang/getDiagnostic Unit Index
+			integer/box as integer! ret
+		]
 	]
 	
 	getEnumConstantDeclValue: routine [
@@ -851,9 +894,11 @@ make object! [
 		/local
 			C ret
 	] [
-		C: as CXCuror! mC/value
-		ret: _clang/getEnumConstantDeclValue C
-		integer/box ret/lower
+		with [_clang] [
+			C: as CXCursor! mC
+			ret: _clang/getEnumConstantDeclValue C
+			integer/box ret/lower
+		]
 	]
 	
 	getFieldDeclBitWidth: routine [
@@ -862,9 +907,11 @@ make object! [
 		/local
 			C ret
 	] [
-		C: as CXCuror! mC/value
-		ret: _clang/getFieldDeclBitWidth C
-		integer/box ret
+		with [_clang] [
+			C: as CXCursor! mC
+			ret: _clang/getFieldDeclBitWidth C
+			integer/box ret
+		]
 	]
 	
 	getFunctionTypeCallingConv: routine [
@@ -873,9 +920,11 @@ make object! [
 		/local
 			T ret
 	] [
-		T: as CXType! mT/value
-		ret: _clang/getFunctionTypeCallingConv T
-		integer/box ret
+		with [_clang] [
+			T: as CXType! mT
+			ret: _clang/getFunctionTypeCallingConv T
+			integer/box ret
+		]
 	]
 	
 	getNumDiagnostics: routine [
@@ -884,20 +933,24 @@ make object! [
 		/local
 			Unit ret
 	] [
-		Unit: as void-ptr! mUnit/value
-		ret: _clang/getNumDiagnostics Unit
-		integer/box ret
+		with [_clang] [
+			Unit: as void-ptr! mUnit
+			ret: _clang/getNumDiagnostics Unit
+			integer/box ret
+		]
 	]
 	
 	getNumElements: routine [
 		mT		[integer!]
 		return: [integer!]
 		/local
-			mT ret
+			T ret
 	] [
-		T: as CXType! mT/value
-		ret: _clang/getNumElements T
-		integer/box ret/lower
+		with [_clang] [
+			T: as CXType! mT
+			ret: _clang/getNumElements T
+			integer/box ret/lower
+		]
 	]
 	
 	getResultType: routine [
@@ -906,9 +959,11 @@ make object! [
 		/local
 			T ret
 	] [
-		T: as CXType! mT/value
-		ret: _clang/getResultType T
-		integer/box as integer! ret
+		with [_clang] [
+			T: as CXType! mT
+			ret: _clang/getResultType T
+			integer/box as integer! ret
+		]
 	]
 	
 	getTranslationUnitCursor: routine [
@@ -917,9 +972,11 @@ make object! [
 		/local
 			arg1 ret
 	] [
-		arg1: as void-ptr! marg1/value
-		ret: _clang/getTranslationUnitCursor arg1
-		integer/box as integer! ret
+		with [_clang] [
+			arg1: as void-ptr! marg1
+			ret: _clang/getTranslationUnitCursor arg1
+			integer/box as integer! ret
+		]
 	]
 	
 	getTypeDeclaration: routine [
@@ -928,9 +985,11 @@ make object! [
 		/local
 			CT ret
 	] [
-		CT: as CXType! mCT/value
-		ret: _clang/getTypeDeclaration CT
-		integer/box as integer! ret
+		with [_clang] [
+			CT: as CXType! mCT
+			ret: _clang/getTypeDeclaration CT
+			integer/box as integer! ret
+		]
 	]
 	
 	getTypeSpelling: routine [
@@ -939,12 +998,14 @@ make object! [
 		/local
 			CT ret text
 	] [
-		CT: as CXType! mCT/value
-		ret: _clang/getTypeSpelling CT
-		text: as c-string! ret/data
-		SET_RETURN ((string/load text (length? text) + 1  UTF-8))
-		free-any ret
-		free-any text
+		with [_clang] [
+			CT: as CXType! mCT
+			ret: _clang/getTypeSpelling CT
+			text: as c-string! ret/data
+			SET_RETURN ((string/load text (length? text) + 1  UTF-8))
+			free as byte-ptr! ret
+			free as byte-ptr! text
+		]
 	]
 	
 	isFunctionTypeVariadic: routine [
@@ -953,9 +1014,11 @@ make object! [
 		/local
 			T ret
 	] [
-		T: as CXType! mT/value
-		ret: _clang/isFunctionTypeVariadic T
-		logic/box as logic! ret
+		with [_clang] [
+			T: as CXType! mT
+			ret: _clang/isFunctionTypeVariadic T
+			logic/box as logic! ret
+		]
 	]
 	
 	parseTranslationUnit2: routine [
@@ -977,24 +1040,26 @@ make object! [
 			num_unsaved_files
 			options out_TU
 	] [
-		CIdx: as void-ptr! mCIdx/value
-		source_filename: as void-ptr! to-UTF8 msource_filename
-		command_line_args: as void-ptr! mcommand_line_args/value
-		num_command_line_args: as int32! mnum_command_line_args/value
-		unsaved_files: as void-ptr! munsaved_files/value
-		num_unsaved_files: as uint32! mnum_unsaved_files/value
-		options: as uint32! moptions/value
-		out_TU: as void-ptr! mout_TU/value
-		ret: _clang/parseTranslationUnit2
-				CIdx
-				source_filename
-				command_line_args
-				num_command_line_args
-				unsaved_files
-				num_unsaved_files
-				options out_TU
-		mout_TU: integer/box out_TU
-		integer/box ret
+		with [_clang] [
+			CIdx: as void-ptr! mCIdx
+			source_filename: as void-ptr! unicode/to-UTF8 msource_filename
+			command_line_args: as void-ptr! mcommand_line_args
+			num_command_line_args: as int32! mnum_command_line_args
+			unsaved_files: as void-ptr! munsaved_files
+			num_unsaved_files: as uint32! mnum_unsaved_files
+			options: as uint32! moptions
+			out_TU: as void-ptr! mout_TU
+			ret: _clang/parseTranslationUnit2
+					CIdx
+					source_filename
+					command_line_args
+					num_command_line_args
+					unsaved_files
+					num_unsaved_files
+					options out_TU
+			mout_TU: as integer! out_TU
+			integer/box ret
+		]
 	]
 	
 	Type_getAlignOf: routine [
@@ -1003,9 +1068,11 @@ make object! [
 		/local
 			T ret
 	] [
-		T: as CXType! mT/value
-		ret: _clang/Type_getAlignOf T
-		integer/box ret/lower
+		with [_clang] [
+			T: as CXType! mT
+			ret: _clang/Type_getAlignOf T
+			integer/box ret/lower
+		]
 	]
 	
 	Type_getOffsetOf: routine [
@@ -1015,10 +1082,12 @@ make object! [
 		/local
 			T S ret
 	] [
-		T: as CXType! mT/value
-		S: as int-ptr! mS/value
-		ret: _clang/Type_getOffsetOf T S
-		integer/box ret/lower
+		with [_clang] [
+			T: as CXType! mT
+			S: as int-ptr! mS
+			ret: _clang/Type_getOffsetOf T S
+			integer/box ret/lower
+		]
 	]
 	
 	Type_getSizeOf: routine [
@@ -1027,9 +1096,11 @@ make object! [
 		/local
 			T ret
 	] [
-		T: as CXType! mT/value
-		ret: _clang/Type_getSizeOf T
-		integer/box ret/lower
+		with [_clang] [
+			T: as CXType! mT
+			ret: _clang/Type_getSizeOf T
+			integer/box ret/lower
+		]
 	]
 	
 	visitChildren: routine [
@@ -1043,10 +1114,12 @@ make object! [
 			client_data
 			ret
 	] [
-		parent: as CXCuror! mparent/value
-		visitor: as int-ptr! mvisitor/value
-		client_data: as int-ptr! mclient_data/value
-		ret: _clang/visitChildren parent visitor client_data
-		integer/box ret
+		with [_clang] [
+			parent: as CXCursor! mparent
+			visitor: as int-ptr! mvisitor
+			client_data: as int-ptr! mclient_data
+			ret: _clang/visitChildren parent visitor client_data
+			integer/box ret
+		]
 	]
 ]

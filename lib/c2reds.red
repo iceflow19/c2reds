@@ -1,9 +1,11 @@
 Red []
 
+#include %clang.red
+
 ;recycle/torture
 ARCH: 'LP32
-switch first system/platform [
-	Linux [
+switch system/platform [
+	'Linux [
 		switch/default second system/platform [
 			libc-x64 [
 				clang: do %clang-posix-lp64.reb
@@ -13,18 +15,6 @@ switch first system/platform [
 			clang: do %clang-posix-lp32.reb
 		]
 		libc: make library! %libc.so.6
-	]
-	Windows [
-		switch second system/platform [
-			win32-x64 [
-				clang: do %clang-win32-x64.reb
-				ARCH: 'LLP64
-			]
-			win32-x86 [
-				clang: do %clang-win32-x32.reb
-			]
-		]
-		libc: make library! %msvcrt.dll
 	]
 ]
 
